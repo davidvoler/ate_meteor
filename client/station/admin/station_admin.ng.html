@@ -1,17 +1,15 @@
 <div >
-  <ate-pane></ate-pane>
-  <ate-info-yield></ate-info-yield>
   <section>
     <form>
       <md-input-container>
         <label>Name</label>
-        <input ng-model="newFixture.name">
+        <input ng-model="admin.newStation.name">
       </md-input-container>
       <md-input-container>
-        <label>Number of cavities</label>
-        <input ng-model="newFixture.noCavities">
+        <label>hostname or ip address</label>
+        <input ng-model="admin.newStation.hostname">
       </md-input-container>
-      <md-button class="md-raised md-primary" ng-click="addFixture()">Add</md-button>
+      <md-button class="md-raised md-primary" ng-click="admin.add()">Add</md-button>
     </form>
   </section>
 
@@ -19,14 +17,14 @@
   <table>
     <tr>
       <td>Name</td>
-      <td>Cavities</td>
+      <td>Hostname</td>
       <td>Action</td>
     </tr>
-    <tr ng-repeat="fixture in fixtures">
-      <td>{{fixture.name}}</td>
-      <td>{{fixture.cavities}}</td>
+    <tr ng-repeat="station in admin.stations">
+      <td>{{station.name}}</td>
+      <td>{{station.hostname}}</td>
       <td>
-        <md-button class="md-raised md-primary" ng-click="remove(fixture)">Remove</md-button>
+        <md-button class="md-raised md-primary" ng-click="remove(station)">Remove</md-button>
       </td>
     </tr>
   </table>

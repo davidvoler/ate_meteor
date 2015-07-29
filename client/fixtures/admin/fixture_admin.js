@@ -10,7 +10,7 @@
       }
       var fixture = {name: self.newFixture.name, cavities: []};
       var numCavities = parseInt(self.newFixture.noCavities);
-      for (i = 0; i < numCavities; i++) {
+      for (var i = 0; i < numCavities; i++) {
         fixture.cavities.push(i + 1);
       }
       self.fixtures.push(fixture);

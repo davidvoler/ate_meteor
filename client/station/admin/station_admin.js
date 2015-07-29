@@ -1,22 +1,24 @@
-angular.module('ate').controller('StationAdminCtrl', ['$scope','$meteor',
-      function($scope, $meteor){
-        $scope.newFixture = {};
-        $scope.fixtures = $meteor.collection(Fixture);
-        $scope.addFixture = function(){
-          if (!$scope.newFixture.name){
-            return;
-          }
-          var fixture = {name:$scope.newFixture.name,cavities:[]};
-          var numCavities = parseInt($scope.newFixture.noCavities);
-          for (i=0; i<numCavities ;i++){
-            fixture.cavities.push(i+1);
-          }
-          $scope.fixtures.push(fixture);
-          $scope.newFixture = {};
-        };
-        $scope.remove = function(fixture){
-          $scope.fixtures.splice( $scope.fixtures.indexOf(fixture), 1 );
-        };
+(function () {
+  "use strict";
+  function StationAdminCtrl($meteor) {
+    var self = this;
+    self.newStation = {};
+    self.stations = $meteor.collection(Station);
+    self.add = function () {
+      if (!self.newStation.name) {
+        return;
+      }
+      var station = {name: self.newStation.name, hostname: self.newStation.hostname};
 
-    }]);
+      self.stations.push(station);
+      self.newStation = {};
+    };
+    self.remove = function (station) {
+      self.stations.splice(self.fixtures.indexOf(station), 1);
+    };
+  }
+
+  angular.module('ate')
+      .controller('StationAdminCtrl', ['$meteor', StationAdminCtrl]);
+}());
 

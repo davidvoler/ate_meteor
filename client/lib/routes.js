@@ -3,7 +3,7 @@
   function routes($routeProvider) {
     $routeProvider
         .when('/station', {
-          templateUrl: 'client/station/index.ng.html',
+          templateUrl: 'client/station/station.ng.html',
           controller: 'StationCtrl',
           controllerAs: 'station'
         })
@@ -13,7 +13,7 @@
           controllerAs: 'admin'
         })
         .when('/admin/fixtures', {
-          templateUrl: 'client/fixtures/directives/fixtures_admin.ng.html',
+          templateUrl: 'client/fixtures/admin/fixture_admin.ng.html',
           controller: 'FixtureAdmin',
           controllerAs: 'admin'
         })
