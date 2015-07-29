@@ -1,0 +1,34 @@
+<div >
+  <ate-pane></ate-pane>
+  <ate-info-yield></ate-info-yield>
+  <section>
+    <form>
+      <md-input-container>
+        <label>Name</label>
+        <input ng-model="newFixture.name">
+      </md-input-container>
+      <md-input-container>
+        <label>Number of cavities</label>
+        <input ng-model="newFixture.noCavities">
+      </md-input-container>
+      <md-button class="md-raised md-primary" ng-click="addFixture()">Add</md-button>
+    </form>
+  </section>
+
+
+  <table>
+    <tr>
+      <td>Name</td>
+      <td>Cavities</td>
+      <td>Action</td>
+    </tr>
+    <tr ng-repeat="fixture in fixtures">
+      <td>{{fixture.name}}</td>
+      <td>{{fixture.cavities}}</td>
+      <td>
+        <md-button class="md-raised md-primary" ng-click="remove(fixture)">Remove</md-button>
+      </td>
+    </tr>
+  </table>
+</div>
+
