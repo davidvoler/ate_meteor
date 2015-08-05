@@ -44,6 +44,14 @@ Meteor.startup(function () {
     for (var i = 0; i < statuses.length; i++)
       RunStatus.insert(statuses[i]);
   }
+  if (Station.find().count() <20) {
+
+    var stations = [];
+    for (var i = 0; i<20; i++){
+       Station.insert({name:'name'+i,hostname:'1.1.2.'+i});
+    }
+
+  }
 
 });
 
