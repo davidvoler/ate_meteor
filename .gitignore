@@ -1,4 +1,10 @@
+
+.idea
+
+launcher/web_res/bower_components/
+__pycache__/
+*.py[cod]
+
 viewer/.meteor/local
 viewer/.meteor/meteorite
-.idea
 
