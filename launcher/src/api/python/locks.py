@@ -2,12 +2,13 @@ __author__ = 'davidl'
 import time
 from redlock import RedLock
 from redis import Redis
-
+"""
 dlm = RedLock('example')
 my_lock = dlm.acquire()
 print ('now example is locked')
 dlm.release()
 print ('now example it is free')
+"""
 
 
 def shared_resource_wait_lock(execution_id, resource, state, retry=100, delay=0.03):

@@ -7,4 +7,6 @@ __pycache__/
 
 viewer/.meteor/local
 viewer/.meteor/meteorite
+viewer/run.sh
 
+db/

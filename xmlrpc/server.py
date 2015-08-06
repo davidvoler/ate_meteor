@@ -13,7 +13,7 @@ import tendo.singleton
 import xmlrpclib
 import copy
 
-from utils import load_config
+from xmlrpc.utils import load_config
 
 load_config()
 
