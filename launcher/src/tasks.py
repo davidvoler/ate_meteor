@@ -2,6 +2,8 @@ from celery import Celery
 import time
 from random import randrange
 from redlock import RedLock
+import uuid
+from api.python.locks import ExecutionStatusLock, SharedWaitResource
 
 app = Celery('hello', broker='amqp://localhost//', backend='redis://localhost')
 
@@ -17,14 +19,17 @@ def rand_verdict():
     """
 
 
-def run_test(uut, test, unique_res=None, wait_res=None):
+def run_test(execution_id, process_id, uut, test, unique_res=None, wait_res=None):
     """
     Temporary test runner
     :param uut:
     :param test:
     :return:
     """
-
+    if wait_res:
+        wait_lock = SharedWaitResource(execution_id, process_id, wait_res)
+        wait_lock.set_state(1)
+        wait_lock.when_ready()
     lock = None
     if unique_res:
         res_lock = RedLock(unique_res)
@@ -36,7 +41,7 @@ def run_test(uut, test, unique_res=None, wait_res=None):
     time.sleep(randrange(1, 1500) / 1000.0)
     # todo use REST api to set function status
     verdict = rand_verdict()
-    payload = {'verdict': verdict, 'test': test, 'uut': uut}
+    payload = {'verdict': verdict, 'test': test, 'uut': uut}  # ,'execution_id':execution_id, 'process_id':process_id}
     print (payload)
     if lock:
         print ('releasing {}'.format(unique_res))
@@ -45,12 +50,17 @@ def run_test(uut, test, unique_res=None, wait_res=None):
 
 
 @app.task
-def run_sequence(uut, sequence):
+def run_sequence(execution_id, uut, sequence):
+    process_id = str(uuid.uuid4())
+
+    exc_lock = ExecutionStatusLock(execution_id, process_id)
     print ('Starting Sequence uut:{}'.format(uut['serial']))
     # print (sequence)
     for test in sequence:
-        if not run_test(uut, test['name'], test['unique_lock']):
+        if not run_test(execution_id, process_id, uut, test['name'], test['unique_lock'],test['wait_lock']):
             print ('UUT Serial:{} Failed'.format(uut['serial']))
+            exc_lock.end_process()
             return False
     print ('UUT Serial:{} Success'.format(uut['serial']))
+    exc_lock.end_process()
     return True

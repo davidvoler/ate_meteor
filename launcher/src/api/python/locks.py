@@ -2,6 +2,8 @@ __author__ = 'davidl'
 import time
 from redlock import RedLock
 from redis import Redis
+import pickle
+
 """
 dlm = RedLock('example')
 my_lock = dlm.acquire()
@@ -37,6 +39,19 @@ def shared_resource_wait_lock(execution_id, resource, state, retry=100, delay=0.
         pass
 
 
+class ExecutionStatusLock(object):
+    def __init__(self, execution_id, process_id):
+        self.redis = Redis()
+        self.execution_id = execution_id
+        self.process_id = process_id
+        self.active_key = 'active:{}'.format(self.execution_id)
+        self.redis.hset(self.active_key, self.process_id, 1)
+        print ('process_id:{} - is now active'.format(self.process_id))
+    def end_process(self):
+        self.redis.hdel(self.active_key, self.process_id)
+        print ('process_id:{} - exited'.format(self.process_id))
+
+
 class SharedWaitResource(object):
     """
     Process safe shared resource shared amongst few running process.
@@ -46,7 +61,7 @@ class SharedWaitResource(object):
     When all Active process
     """
 
-    def __init__(self, execution_id, resource, process_id):
+    def __init__(self, execution_id, process_id, resource):
         self.redis = Redis()
         self.execution_id = execution_id
         self.resource = resource
@@ -57,35 +72,45 @@ class SharedWaitResource(object):
 
     def active_process(self):
         active = self.redis.get(self.active_key)
-        return active
+        print ('Active Process:{}'.format(active))
+        print (active)
+        return len(active)
 
     def get_state(self):
         resource_key = {
             'state': None,
             'waiting': []
         }
-        self.redis.setnx(self.key, resource_key)
+        self.redis.setnx(self.key,  resource_key)
         resource_key = self.redis.get(self.key)
         return resource_key['state']
 
     def set_state(self, state):
         resource_key = {
             'state': state,
-            'waiting': []
+            'waiting': [self.process_id]
         }
+
         self.redis.setnx(self.key, resource_key)
         resource_key = self.redis.get(self.key)
+        print (resource_key)
+        print (resource_key)
+        print (type(resource_key))
+
         if resource_key['state'] == state:
             return True
         else:
             return False
 
-    def when_ready(self, retry=100, interval=0.005):
-        self.access_key.acquire()
+    def when_ready(self, retry=500, interval=0.02):
+        print ('when_ready')
+        #self.access_key.acquire()
         # What if lock
         resource_key = self.redis.get(self.key)
+        print(resource_key)
         if not resource_key:
             # Someone deleted the resource or it was never created. Raise Exception
+            print ('when_ready: no resource key')
             return False
         else:
             if self.process_id not in resource_key['waiting']:
@@ -94,14 +119,18 @@ class SharedWaitResource(object):
         self.access_key.release()
         for i in range(0, retry):
             resource_key = self.redis.get(self.key)
+            print (resource_key)
+
             if len(resource_key['waiting']) >= self.active_process():
                 return True
             else:
                 time.sleep(interval)
         # here we should raise timeout exception
+        print ('when_ready: Exceeded wait time')
         return False
 
-    def set_and_wait(self, state, retry=100, interval=0.005):
+    def set_and_wait(self, state, retry=500, interval=0.02):
         if not self.set_state(state):
+            print ('set_and_wait:Fail')
             return False
         return self.when_ready(retry, interval)
