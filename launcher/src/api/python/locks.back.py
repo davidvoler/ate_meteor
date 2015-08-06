@@ -13,6 +13,32 @@ print ('now example it is free')
 """
 
 
+def shared_resource_wait_lock(execution_id, resource, state, retry=100, delay=0.03):
+    """
+    A shared resource that requires to wait for all current running uuts
+    Implement with redis
+    :param resource:
+    :param state:
+    :param retry: Number of time to
+    :param delay:
+    :return:
+    """
+    redis_db = Redis()
+    # if number of active execution == 1, no need for a lock, just return True:
+    if redis_db.get("active:{}".format(execution_id)) == 1:
+        return True
+    # create a
+    lck = RedLock("access_wait_{}:{}".format(resource, execution_id))
+    if redis_db.get("{}:{}".format(resource, execution_id)):
+        # Add self to the list of waiting processes
+
+        # If waiting process equal active process: enable this lock
+        pass
+    else:
+        set("{}:{}".format(resource, execution_id), {'wating': 1})
+        pass
+
+
 class ExecutionStatusLock(object):
     def __init__(self, execution_id, process_id):
         self.redis = Redis()
@@ -25,29 +51,6 @@ class ExecutionStatusLock(object):
     def end_process(self):
         self.redis.hdel(self.active_key, self.process_id)
         print ('process_id:{} - exited'.format(self.process_id))
-
-    def _are_all_ready(self, resource):
-        pipe = self.redis.pipeline()
-        pipe.hlen(self.active_key)
-        pipe.hlen('{}:{}'.format(self.execution_id, resource))
-        res = pipe.execute()
-        # print(res)
-        if res[0] <= res[1]:
-            return True
-        else:
-            return False
-
-    def wait_for_all(self, resource, retry=6000, interval=0.01):
-        resource_key = '{}:{}'.format(self.execution_id, resource)
-        self.redis.hset(resource_key, self.process_id, 1)
-        print ('Waiting for all:{}'.format(resource))
-        for i in range(retry):
-            if self._are_all_ready(resource):
-                print ('Resource :{} after {} retry'.format(resource, i))
-                return True
-            time.sleep(interval)
-        print('Expired after {} seconds'.format(retry * interval))
-        return False
 
 
 class SharedWaitResource(object):
@@ -66,6 +69,7 @@ class SharedWaitResource(object):
         self.process_id = process_id
         self.key = '{}:{}'.format(self.execution_id, self.resource)
         self.active_key = 'active:{}'.format(self.execution_id)
+        self.access_key = RedLock('access:{}:{}'.format(self.execution_id, self.resource))
 
     def active_process(self):
         active = self.redis.get(self.active_key)
@@ -78,7 +82,7 @@ class SharedWaitResource(object):
             'state': None,
             'waiting': []
         }
-        self.redis.setnx(self.key, resource_key)
+        self.redis.setnx(self.key,  resource_key)
         resource_key = self.redis.get(self.key)
         return resource_key['state']
 
@@ -101,7 +105,7 @@ class SharedWaitResource(object):
 
     def when_ready(self, retry=500, interval=0.02):
         print ('when_ready')
-        # self.access_key.acquire()
+        #self.access_key.acquire()
         # What if lock
         resource_key = self.redis.get(self.key)
         print(resource_key)

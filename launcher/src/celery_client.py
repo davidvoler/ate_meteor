@@ -4,7 +4,7 @@ import uuid
 
 uuts = [{'serial': '11101'}, {'serial': '11102'}, {'serial': '11103'}, {'serial': '11104'}]
 sequence = [
-    {'name': 'test1_ps_locked',
+    {'name': 'test1',
      'unique_lock': None,
      'wait_lock': None},
     {'name': 'test2',
@@ -16,7 +16,19 @@ sequence = [
     {'name': 'test4',
      'unique_lock': None,
      'wait_lock': None},
-    {'name': 'test5_on_switch',
+    {'name': 'test5',
+     'unique_lock': None,
+     'wait_lock': None},
+    {'name': 'test6_ps',
+     'unique_lock': 'ps',
+     'wait_lock': None},
+    {'name': 'test7',
+     'unique_lock': None,
+     'wait_lock': None},
+    {'name': 'test8',
+     'unique_lock': None,
+     'wait_lock': None},
+    {'name': 'test_on_switch',
      'unique_lock': None,
      'wait_lock': 'on_switch'}
 ]

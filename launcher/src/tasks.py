@@ -9,17 +9,16 @@ app = Celery('hello', broker='amqp://localhost//', backend='redis://localhost')
 
 
 def rand_verdict():
-    return True
-    """
+    #return True
     r = randrange(0, 25)
     if r % 15 == 0:
         return False
     else:
         return True
-    """
 
 
-def run_test(execution_id, process_id, uut, test, unique_res=None, wait_res=None):
+
+def run_test(exc_lock, uut, test, unique_res=None, wait_res=None):
     """
     Temporary test runner
     :param uut:
@@ -27,9 +26,8 @@ def run_test(execution_id, process_id, uut, test, unique_res=None, wait_res=None
     :return:
     """
     if wait_res:
-        wait_lock = SharedWaitResource(execution_id, process_id, wait_res)
-        wait_lock.set_state(1)
-        wait_lock.when_ready()
+        exc_lock.wait_for_all(wait_res)
+
     lock = None
     if unique_res:
         res_lock = RedLock(unique_res)
@@ -57,7 +55,7 @@ def run_sequence(execution_id, uut, sequence):
     print ('Starting Sequence uut:{}'.format(uut['serial']))
     # print (sequence)
     for test in sequence:
-        if not run_test(execution_id, process_id, uut, test['name'], test['unique_lock'],test['wait_lock']):
+        if not run_test(exc_lock, uut, test['name'], test['unique_lock'],test['wait_lock']):
             print ('UUT Serial:{} Failed'.format(uut['serial']))
             exc_lock.end_process()
             return False
