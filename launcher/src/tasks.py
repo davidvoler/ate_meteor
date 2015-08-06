@@ -10,8 +10,8 @@ app = Celery('hello', broker='amqp://localhost//', backend='redis://localhost')
 
 def rand_verdict():
     #return True
-    r = randrange(0, 25)
-    if r % 15 == 0:
+    r = randrange(0, 35)
+    if r % 17 == 0:
         return False
     else:
         return True
