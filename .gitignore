@@ -10,3 +10,4 @@ viewer/.meteor/meteorite
 viewer/run.sh
 
 db/
+*.db

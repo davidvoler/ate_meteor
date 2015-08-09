@@ -3,9 +3,9 @@
   {{station.info}}
   <a href="#/admin/stations">Admin</a>
 
-  <div layout="row">
-    <ate-fixture flex></ate-fixture>
-    <ate-fixture flex></ate-fixture>
+  <div>{{station.fixtures}}</div>
+  <div layout="row" >
+    <ate-fixture key="fixture._id" flex ng-repeat="fixture in station.fixtures"></ate-fixture>
   </div>
 
 </div>

@@ -3,21 +3,23 @@
  */
 /**
  * Created by davidl on 7/30/15.
- * Cavity directive
+ * Fixture directive
+ *
  */
 (function () {
   "use strict";
-  function ateFixture() {
+  function ateFixture($meteor) {
     return {
       restrict: 'E',
       templateUrl: 'client/fixtures/directives/fixture/fixture.ng.html',
-      scope:{},
+      scope: {key: '='},
       link: function (scope, element, attr) {
+        scope.fixture = $meteor.object(Fixture, scope.key);
       }
     }
   }
 
   angular.module('ate')
-      .directive('ateFixture', [ateFixture]);
+      .directive('ateFixture', ['$meteor', ateFixture]);
 
 }());
