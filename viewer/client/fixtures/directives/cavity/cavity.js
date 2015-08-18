@@ -8,11 +8,9 @@
     return {
       restrict: 'E',
       templateUrl: 'client/fixtures/directives/cavity/cavity.ng.html',
-      scope:{},
+      scope: {info: '='},
       link: function (scope, element, attr) {
-        scope.active=true;
-        scope.serial = '';
-        scope.status = 'idle'
+        
       }
     }
   }

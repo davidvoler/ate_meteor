@@ -1,13 +1,14 @@
 <md-whiteframe class="md-whiteframe-z3" layout="column" style="margin:10px;">
   <h4>{{fixture.name}} :{{key}}</h4>
   <div layout="row">
-    <ate-cavity flex></ate-cavity>
-    <ate-cavity flex></ate-cavity>
-    <ate-cavity flex></ate-cavity>
-    <ate-cavity flex></ate-cavity>
+    <ate-cavity ng-repeat="cavity in fixture.cavities" info="cavity" flex></ate-cavity>
+
   </div>
   <div style="padding: 10px;">
     <md-progress-linear></md-progress-linear>
   </div>
-{{fixture}}
+  <div>
+    <md-button class="md-raised md-primary" >Start</md-button>
+    <md-button class="md-raised md-warn">Stop</md-button>
+  </div>
 </md-whiteframe>

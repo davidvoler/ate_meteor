@@ -10,7 +10,7 @@ var cavity_doc = {
 };
 
 
-var fixture_doc = {
+var fixture_doc_ = {
   name: '',
   configuration: '',
   cavities: [],
@@ -19,3 +19,14 @@ var fixture_doc = {
   position: {x: 0, y: 0},
   station: ''
 };
+
+
+Meteor.methods({
+  createFixture:function(){
+
+  },
+  addCavity:function(){
+
+  }
+
+});

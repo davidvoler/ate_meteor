@@ -15,7 +15,7 @@
     }
   }
 
-  angular.module('MODULE_NAME')
+  angular.module('ate')
       .directive('myDirective', [myDirective]);
 
 }());

@@ -2,13 +2,13 @@
   <md-progress-linear ></md-progress-linear>
   <div layout="row">
     <md-input-container md-no-float flex="80">
-      <input ng-model="serial" placeholder="Serial">
+      <input ng-model="info.serial" placeholder="Serial">
     </md-input-container>
     <div flex>
-      <md-checkbox ng-model="active" aria-label="active">
+      <md-checkbox ng-model="info.active" aria-label="active">
       </md-checkbox>
     </div>
   </div>
-  <div>{{status}}</div>
+  <div>{{info.status}}</div>
 
 </md-whiteframe>
