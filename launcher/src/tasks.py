@@ -17,7 +17,8 @@ db = mongo_client[options.mongo_db_name]
 def report_execution_status(fixture_id, status):
     fixture = db['fixture'].find_one(fixture_id)
     fixture['status'] = status
-    db['fixture'].update({'_id': fixture_id}, {"$set": fixture}, upsert=True)
+    db['fixture'].update({'_id': fixture_id}, {"$set": fixture}, upsert=False, manipulate=True, safe=True)
+
 
 
 def report_sequence_status(fixture_id, cavity, status):
@@ -27,7 +28,7 @@ def report_sequence_status(fixture_id, cavity, status):
         # print (i, cavity['id'])
         if fixture['cavities'][i]['id'] == cavity['id']:
             fixture['cavities'][i]['status'] = status
-    db['fixture'].update({'_id': fixture_id}, {"$set": fixture}, upsert=True)
+    db['fixture'].update({'_id': fixture_id}, {"$set": fixture}, upsert=False, manipulate=True, safe=True)
 
 
 def report_lock_status():
@@ -35,7 +36,7 @@ def report_lock_status():
 
 
 def rand_verdict():
-    # return True
+    return True
     r = randrange(0, 35)
     if r % 17 == 0:
         return False
@@ -76,10 +77,8 @@ def run_test(fixture_id, exc_lock, uut, test, unique_res=None, wait_res=None):
 
 @app.task
 def run_sequence(fixture_id, execution_id, uut, sequence):
-    print ('Starting Sequence uut:{} cavity:{}'.format(uut['serial'], uut['id']))
-    return True
     process_id = str(uuid.uuid4())
-    report_sequence_status(fixture_id, uut, 'started')
+    report_sequence_status(fixture_id, uut , 'started')
     exc_lock = ExecutionStatusLock(execution_id, process_id)
     print ('Starting Sequence uut:{} cavity:{}'.format(uut['serial'], uut['id']))
     # return True
@@ -88,7 +87,7 @@ def run_sequence(fixture_id, execution_id, uut, sequence):
         if not run_test(fixture_id, exc_lock, uut, test['name'], test['unique_lock'], test['wait_lock']):
             print ('UUT Serial:{} Failed'.format(uut['serial']))
             exc_lock.end_process()
-            report_sequence_status(fixture_id, uut, 'success')
+            report_sequence_status(fixture_id, uut, 'fail')
             return False
     print ('UUT Serial:{} Success'.format(uut['serial']))
     exc_lock.end_process()

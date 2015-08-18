@@ -41,12 +41,10 @@ def main():
     fixture_id = 'kay8KPM4yGXiCJHui'
     report_execution_status(fixture_id, 'running')
     print (uuts)
-    for i in range(len(uuts)):
-        time.sleep(5)
-        print (uuts[i])
-        res = run_sequence.delay(fixture_id, execution_id, uuts[i], sequence)
+    for uut in uuts:
+        res = run_sequence.delay(fixture_id, execution_id, uut, sequence)
         print (res)
-        #
+
 
 if __name__ == '__main__':
     main()
