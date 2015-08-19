@@ -7,8 +7,13 @@ from api.python.locks import ExecutionStatusLock, SharedWaitResource
 from tornado.options import options
 import pymongo
 
-app = Celery('hello', broker='amqp://localhost//', backend='redis://localhost')
+app = Celery('proj', broker='amqp://localhost//', backend='redis://localhost')
 import config
+
+app.conf.update(
+    CELERY_TASK_SERIALIZER='json',
+    CELERY_RESULT_SERIALIZER='json'
+)
 
 mongo_client = pymongo.MongoClient(options.mongo_db_host)
 db = mongo_client[options.mongo_db_name]

@@ -1,3 +1,5 @@
+3stack:celery@2.0.0
+3stack:celery-connect@3.0.0
 3stack:celery-shoot@4.0.1
 angular:angular@1.4.2
 angular:angular-animate@1.4.2

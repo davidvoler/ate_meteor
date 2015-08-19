@@ -1,4 +1,6 @@
 Meteor.startup(function () {
+
+
   if (Fixture.find().count() === 0) {
 
     var fixtures = [
