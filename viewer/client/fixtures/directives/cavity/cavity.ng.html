@@ -1,14 +1,9 @@
 <md-whiteframe flex style="margin: 5px;" class="md-whiteframe-z2" layout="column">
-  <md-progress-linear ></md-progress-linear>
-  <div layout="row">
-    <md-input-container md-no-float flex="80">
+  <md-progress-linear md-mode="determinate" value="{{info.progress}}" ></md-progress-linear>
+  <div >
+    <md-input-container md-no-float >
       <input ng-model="info.serial" placeholder="Serial">
     </md-input-container>
-    <div flex>
-      <md-checkbox ng-model="info.active" aria-label="active">
-      </md-checkbox>
-    </div>
   </div>
   <div>{{info.status}}</div>
-
 </md-whiteframe>

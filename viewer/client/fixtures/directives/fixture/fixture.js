@@ -14,7 +14,7 @@
       templateUrl: 'client/fixtures/directives/fixture/fixture.ng.html',
       scope: {key: '='},
       link: function (scope, element, attr) {
-        scope.fixture = $meteor.object(Fixture, scope.key);
+        scope.fixture = $meteor.object(Fixture, scope.key, false);
         scope.countTests = 0;
         scope.runFixture = function () {
           scope.countTests = 0;

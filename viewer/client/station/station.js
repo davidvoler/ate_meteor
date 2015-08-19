@@ -9,14 +9,12 @@
     self.runFixture = function (fixtureId){
       var fixture = self.fixtures.find({_id:fixtureId});
       self.countTests = 0;
-      console.log(fixture);
+      //console.log(fixture);
       $interval(function(){
         self.countTests++;
         fixture.cavities[0].status = "test_"+self.countTests;
       } , 2, 10);
     }
-
-
   }
   angular.module('ate')
       .controller('StationCtrl', ['$meteor', StationCtrl]);

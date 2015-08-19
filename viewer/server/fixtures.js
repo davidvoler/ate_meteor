@@ -6,11 +6,11 @@ Meteor.publish("fixtures", function () {
 
 Meteor.methods({
   runServerFixture: function (fixtureId) {
-    console.log(fixtureId);
+    //console.log(fixtureId);
     //var fixtureCollection = new Mongo.Collection('fixture');
     fixture = Fixture.findOne({_id:fixtureId});
 
-    console.log(fixture);
+    //console.log(fixture);
     var countTests = 0;
 
     var interval = Meteor.setInterval(function () {
@@ -26,6 +26,26 @@ Meteor.methods({
         countTests++;
       }
     }, 1000);
+    return true;
+  },
+  setCavityStatus: function(fixtureId, cavityId, status, progress){
+    fixture = Fixture.findOne({_id:fixtureId});
+    console.log(""+fixtureId +"|"+ cavityId +'|'+ status +'|'+progress);
+    //cid = parseInt(cavityId);
+    fixture.cavities[cavityId].status = status;
+    fixture.cavities[cavityId].progress = progress;
+    var fixture_progress = 0;
+    for (var i in fixture.cavities){
+      if(fixture.cavities[i].status == 'fail'){
+        fixture_progress = fixture_progress +100;
+      }
+      else if (fixture.cavities[i].progress){
+        fixture_progress = fixture_progress + fixture.cavities[i].progress;
+      }
+    }
+    fixture.progress = fixture_progress/fixture.cavities.length;
+    Fixture.update({_id:fixtureId},fixture);
+
     return true;
   }
 });

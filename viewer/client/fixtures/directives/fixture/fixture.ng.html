@@ -5,7 +5,7 @@
 
   </div>
   <div style="padding: 10px;">
-    <md-progress-linear></md-progress-linear>
+    <md-progress-linear md-mode="determinate" value="{{fixture.progress}}"></md-progress-linear>
   </div>
   <div>
     <md-button ng-click="runServerFixture()" class="md-raised md-primary" >Start</md-button>
