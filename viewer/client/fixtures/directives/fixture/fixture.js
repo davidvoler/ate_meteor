@@ -26,6 +26,7 @@
             scope.fixture.cavities[3].status = "test_" + scope.countTests;
           }, 1000, 10);
         };
+
         scope.runServerFixture = function () {
           $meteor.call('runServerFixture', scope.key).then(function(res){
             console.log(res);

@@ -26,15 +26,24 @@ Meteor.methods({
         Fixture.update({_id: fixtureId}, fixture);
         countTests++;
       }
+
     }, 1000);
     return true;
+
   },
   runServerFixture: function (fixtureId) {
+
+
     var uuts = [{'serial': '11101', 'id': 0},
       {'serial': '11102', 'id': 1},
       {'serial': '11103', 'id': 2},
       {'serial': '11104', 'id': 3}];
     var sequence = [
+      {
+        'name': '',
+        'unique_lock': null,
+        'wait_lock': null, 'progress': 10
+      },
       {
         'name': 'test1',
         'unique_lock': null,
@@ -102,26 +111,11 @@ Meteor.methods({
       }
 
     ];
-    //var celery = require('celery-shoot'),
-    /*
-     var client = new CeleryClient('hello');
-     client.connect({
-     "BROKER_URL": "amqp://ate:crow2012@192.168.1.124:5672//",
-     "RESULT_BACKEND": "amqp",
-     "SEND_TASK_SENT_EVENT": true
-     });
-     client.on('error', function (err) {
-     console.log(err);
-     });
-     client.on('connect', function () {
-     console.log('Connected');
 
-
-     });
-     */
     this.unblock();
     var task = Celery.createTask('tasks.run_sequence');
     //console.log(task);
+
     try {
       for (i in uuts){
         task.invoke([fixtureId, 12, uuts[i], sequence]);
@@ -130,16 +124,10 @@ Meteor.methods({
     } catch (e) {
       console.error(e.stack);
     }
-    /*
-     for (i in uuts) {
-     this.celery_client.call([fixtureId, 12, [uuts[i], sequence], function (err, result) {
-     console.log(err, result);
-     })
-     }
-     console.log(client._connected);
-     */
-    console.log('runServerFixture');
+
+    return true;
   },
+
 
   setCavityStatus: function (fixtureId, cavityId, status, progress) {
     fixture = Fixture.findOne({_id: fixtureId});
@@ -157,8 +145,29 @@ Meteor.methods({
       }
     }
     fixture.progress = fixture_progress / fixture.cavities.length;
-    Fixture.update({_id: fixtureId}, fixture);
+    if (fixture.progress >= 100){
+      fixture.inUse = false;
+    }else{
+      fixture.inUse = true;
 
+      fixture.inUseDate = new Date();
+
+    }
+    Fixture.update({_id: fixtureId}, fixture);
     return true;
+
+  },
+
+  acquireFixture: function (fixtureId) {
+    fixture = Fixture.findOne({_id: fixtureId});
+    if (fixture.inUse){
+      return false;
+    }else{
+      fixture.inUse = true;
+      Fixture.update({_id: fixtureId}, fixture);
+      return true;
+    }
   }
+
+
 });

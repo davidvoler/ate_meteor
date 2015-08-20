@@ -20,8 +20,7 @@ db = mongo_client[options.mongo_db_name]
 
 from MeteorClient import MeteorClient
 
-client = MeteorClient('ws://127.0.0.1:3000/websocket', auto_reconnect=False)
-client.connect()
+
 
 
 def callback_function(error, result):
@@ -49,7 +48,29 @@ def report_sequence_status_old(fixture_id, cavity, status):
 
 
 def report_sequence_status(fixture_id, cavity, status, progress):
-    client.call('setCavityStatus', [fixture_id, cavity['id'], status, progress], callback_function)
+    client = MeteorClient('ws://127.0.0.1:3000/websocket', auto_reconnect=False)
+    client.connect()
+    try:
+        client.call('setCavityStatus', [fixture_id, cavity['id'], status, progress], callback_function)
+    except Exception as e:
+        print(e)
+        #if the exception is broken pipe - with server write directly to mongo
+        try:
+            fixture = db['fixture'].find_one(fixture_id)
+            fixture['cavities'][cavity['id']]['status'] = status
+            fixture['cavities'][cavity['id']]['progress'] = progress
+
+            fprogress = 0
+            for c in fixture['cavities']:
+                if c['status'] == 'fail':
+                    fprogress += 100
+                else:
+                    fprogress += c['progress']
+            fixture['progress'] = fprogress/len(fixture['cavities'])
+            db['fixture'].update({'_id':fixture_id},fixture)
+        except Exception as e:
+            print (e)
+    client.close()
 
 
 def report_lock_status():
