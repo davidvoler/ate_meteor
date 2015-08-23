@@ -1,0 +1,17 @@
+<div>
+  <input ng-model="conf.name">
+</div>
+<table>
+  <tr>
+    <td>Name</td>
+    <td>Unique lock</td>
+    <td>Wait lock</td>
+    <td>Progress</td>
+  </tr>
+  <tr ng-repeat="test in tests.conf">
+    <td><input ng-model="test.name"></td>
+    <td><input ng-model="test.unique_lock"></td>
+    <td><input ng-model="test.wait_lock"></td>
+    <td><input ng-model="test.progress"></td>
+  </tr>
+</table>

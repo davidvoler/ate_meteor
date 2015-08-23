@@ -27,11 +27,22 @@
           }, 1000, 10);
         };
 
-        scope.runServerFixture = function () {
+        scope.runFixture = function () {
           $meteor.call('runServerFixture', scope.key).then(function(res){
             console.log(res);
           });
         };
+        scope.stopFixture = function(){
+          $meteor.call('stopServerFixture', scope.key).then(function(res){
+            console.log(res);
+          });
+        };
+        scope.clear = function(){
+          for (var i in scope.fixture.cavities){
+            scope.fixture.cavities[i].serial = '';
+          }
+          scope.fixture.save();
+        }
       }
     }
   }

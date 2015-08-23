@@ -6,15 +6,13 @@
   e. Location - Floor map
   f. A list of features that should run on the server.
 
-
-
 2. Admin
   a. Find permission package for meteor
   b. Create an example meteor
 
 Authorisation packages:
 https://github.com/alanning/meteor-roles
-
+is there an authentication package using active directory
 
 3. Unit Testing
   a. Learn how do you do unit test with meteor
@@ -27,4 +25,15 @@ https://github.com/alanning/meteor-roles
   a. On the first run we do a wizard like installation process.
 
 6. Use publish/subscribe - Separate client/server code.
+
+7. Start modeling the new system so it looks like ate-web. Start with admin and Station pages
+  a. Permission & roles
+  a. Station
+  b. Configuration
+
+8. Improve Node Celery & Meteor Celery
+  a. start stop celery from nodejs - the current implementation of node celery has no stop operation.
+
+
+9 Design the new system in a cascade mode
 

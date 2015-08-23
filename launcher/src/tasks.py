@@ -20,7 +20,8 @@ db = mongo_client[options.mongo_db_name]
 
 from MeteorClient import MeteorClient
 
-
+client = MeteorClient('ws://127.0.0.1:3000/websocket', auto_reconnect=False)
+client.connect()
 
 
 def callback_function(error, result):
@@ -48,13 +49,11 @@ def report_sequence_status_old(fixture_id, cavity, status):
 
 
 def report_sequence_status(fixture_id, cavity, status, progress):
-    client = MeteorClient('ws://127.0.0.1:3000/websocket', auto_reconnect=False)
-    client.connect()
     try:
         client.call('setCavityStatus', [fixture_id, cavity['id'], status, progress], callback_function)
     except Exception as e:
         print(e)
-        #if the exception is broken pipe - with server write directly to mongo
+        # if the exception is broken pipe - with server write directly to mongo
         try:
             fixture = db['fixture'].find_one(fixture_id)
             fixture['cavities'][cavity['id']]['status'] = status
@@ -66,19 +65,21 @@ def report_sequence_status(fixture_id, cavity, status, progress):
                     fprogress += 100
                 else:
                     fprogress += c['progress']
-            fixture['progress'] = fprogress/len(fixture['cavities'])
-            db['fixture'].update({'_id':fixture_id},fixture)
+            fixture['progress'] = fprogress / len(fixture['cavities'])
+            db['fixture'].update({'_id': fixture_id}, fixture)
         except Exception as e:
             print (e)
-    client.close()
 
 
-def report_lock_status():
-    pass
+def report_lock_status(fixture_id, lock, status):
+    try:
+        client.call('setLockStatus', [fixture_id, lock,status], callback_function)
+    except Exception as e:
+        print(e)
 
 
 def rand_verdict():
-    #return True
+    # return True
     r = randrange(0, 35)
     if r % 34 == 0:
         return False
@@ -101,6 +102,7 @@ def run_test(fixture_id, exc_lock, uut, test, progress, unique_res=None, wait_re
     lock = None
     if unique_res:
         res_lock = RedLock(unique_res)
+        report_lock_status(fixture_id, unique_res,True)
         lock = res_lock.acquire()
         while not lock:
             time.sleep(0.02)
@@ -114,13 +116,14 @@ def run_test(fixture_id, exc_lock, uut, test, progress, unique_res=None, wait_re
     if lock:
         print ('releasing {}'.format(unique_res))
         res_lock.release()
+        report_lock_status(fixture_id, unique_res,False)
     return verdict
 
 
 @app.task
 def run_sequence(fixture_id, execution_id, uut, sequence):
     process_id = str(uuid.uuid4())
-    report_sequence_status(fixture_id, uut, 'started',0)
+    report_sequence_status(fixture_id, uut, 'started', 0)
     exc_lock = ExecutionStatusLock(execution_id, process_id)
     print ('Starting Sequence uut:{} cavity:{}'.format(uut['serial'], uut['id']))
     # return True

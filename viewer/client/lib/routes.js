@@ -17,6 +17,11 @@
           controller: 'FixtureAdmin',
           controllerAs: 'admin'
         })
+        .when('/admin/fixture/:fixtureId', {
+          templateUrl: 'client/fixtures/admin/fixture_admin.ng.html',
+          controller: 'FixtureAdmin',
+          controllerAs: 'admin'
+        })
         .otherwise({redirectTo: '/station'});
   }
 

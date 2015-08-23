@@ -7,8 +7,14 @@
   <div style="padding: 10px;">
     <md-progress-linear md-mode="determinate" value="{{fixture.progress}}"></md-progress-linear>
   </div>
+  <div style="min-height: 20px;">
+    <i ng-repeat="lock in fixture.locks" class="mdi mdi-lock">{{lock}}</i>
+  </div>
   <div>
-    <md-button ng-click="runServerFixture()" class="md-raised md-primary" >Start</md-button>
-    <md-button class="md-raised md-warn">Stop</md-button>
+    <md-button ng-disabled="fixture.inUse" ng-click="runFixture()" class="md-raised md-primary" >Start</md-button>
+    <md-button ng-disabled="fixture.inUse" ng-click="clear()" class="md-raised md-default" >Clear</md-button>
+    <md-button ng-disabled="!fixture.inUse" ng-click="stopFixture()" class="md-raised md-warn">Stop</md-button>
+    <md-button ng-disabled="!fixture.inUse" ng-click="fixture.inUse = false;" class="md-raised md-warn">Force Stop</md-button>
+    <a href="#/admin/fixtures">Configure</a>
   </div>
 </md-whiteframe>
