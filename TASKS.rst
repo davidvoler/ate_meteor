@@ -37,3 +37,25 @@ is there an authentication package using active directory
 
 9 Design the new system in a cascade mode
 
+10. Directory structure.
+
+Separate the project back into 2 or 3 main projects.
+API for reporting status
+Viewer
+
+Viewer should have a set of packages
+Each package would be wrapped as a meteor package
+
+Launcher should be a set of API and/or example of implementation
+XML RPC can be also and example
+An implementation with Celery and XmlRPC could be one example
+Write
+
+
+
+
+
+
+
+
+

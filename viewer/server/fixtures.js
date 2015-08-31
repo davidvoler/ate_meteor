@@ -60,7 +60,7 @@ Meteor.methods({
       },
       {
         'name': 'test4',
-        'unique_lock': 'switch',
+        'unique_lock': null,
         'wait_lock': null, 'progress': 40
       },
       {
@@ -113,43 +113,62 @@ Meteor.methods({
 
     this.unblock();
     var task = Celery.createTask('tasks.run_sequence');
-    console.log(task);
+    //console.log(task);
     fixture = Fixture.findOne({_id: fixtureId});
     try {
-      for (i in uuts){
+      for (i in uuts) {
         var taskId = task.invoke([fixtureId, 12, uuts[i], sequence]);
-        console.log(taskId);
+        //console.log(taskId);
         fixture.cavities[i].taskId = taskId;
       }
       //return task.invokeSync([fixtureId, 12, uuts[0], sequence]).wait().result;
     } catch (e) {
-      console.error(e.stack);
+      //console.error(e.stack);
     }
     Fixture.update({_id: fixtureId}, fixture);
     return true;
   },
-  setLockStatus: function(fixtureId, lock, status){
+  setLockStatusOld: function (fixtureId, lock, status) {
     fixture = Fixture.findOne({_id: fixtureId});
-    if (!fixture.locks){
+    if (!fixture.locks) {
       fixture.locks = [];
     }
-    if (status){
-      if (fixture.locks.indexOf(lock) < 0){
+    if (status) {
+      if (fixture.locks.indexOf(lock) < 0) {
         fixture.locks.push(lock);
       }
-    }else{
+    } else {
       var iloc = fixture.locks.indexOf(lock);
-      if (iloc >-1){
-        fixture.locks.splice(iloc,1)
+      if (iloc > -1) {
+        fixture.locks.splice(iloc, 1)
       }
     }
 
+    Fixture.update({_id: fixtureId}, fixture);
+  },
+  setLockStatus: function (fixtureId, lock, status) {
+    fixture = Fixture.findOne({_id: fixtureId});
+    if (!fixture.locks) {
+      fixture.locks = [];
+    }
+    var found = false;
+    for (var i in fixture.locks) {
+      if (fixture.locks[i].name == lock) {
+        found = true;
+        fixture.locks[i].status = status;
+        break;
+      }
+    }
+    if (!found) {
+      fixture.locks.push({name: lock, status: status})
+    }
     Fixture.update({_id: fixtureId}, fixture);
   },
   setCavityStatus: function (fixtureId, cavityId, status, progress) {
     fixture = Fixture.findOne({_id: fixtureId});
     //console.log("" + fixtureId + "|" + cavityId + '|' + status + '|' + progress);
     //cid = parseInt(cavityId);
+
     fixture.cavities[cavityId].status = status;
     fixture.cavities[cavityId].progress = progress;
     var fixture_progress = 0;
@@ -162,9 +181,9 @@ Meteor.methods({
       }
     }
     fixture.progress = fixture_progress / fixture.cavities.length;
-    if (fixture.progress >= 100){
+    if (fixture.progress >= 100) {
       fixture.inUse = false;
-    }else{
+    } else {
       fixture.inUse = true;
 
       fixture.inUseDate = new Date();
@@ -173,14 +192,14 @@ Meteor.methods({
     Fixture.update({_id: fixtureId}, fixture);
     return true;
   },
-  stopServerFixture: function(fixtureId){
+  stopServerFixture: function (fixtureId) {
 
   },
   acquireFixture: function (fixtureId) {
     fixture = Fixture.findOne({_id: fixtureId});
-    if (fixture.inUse){
+    if (fixture.inUse) {
       return false;
-    }else{
+    } else {
       fixture.inUse = true;
       Fixture.update({_id: fixtureId}, fixture);
       return true;

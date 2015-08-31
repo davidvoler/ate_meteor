@@ -21,7 +21,7 @@ db = mongo_client[options.mongo_db_name]
 from MeteorClient import MeteorClient
 
 client = MeteorClient('ws://127.0.0.1:3000/websocket', auto_reconnect=False)
-client.connect()
+# client.connect()
 
 
 def callback_function(error, result):
@@ -49,6 +49,23 @@ def report_sequence_status_old(fixture_id, cavity, status):
 
 
 def report_sequence_status(fixture_id, cavity, status, progress):
+    lclient = MeteorClient('ws://127.0.0.1:3000/websocket', auto_reconnect=True)
+    try:
+        lclient.connect()
+    except Exception as e:
+        print (e)
+    try:
+        lclient.call('setCavityStatus', [fixture_id, cavity['id'], status, progress], callback_function)
+    except Exception as e:
+        print (e)
+    try:
+        lclient.close()
+    except Exception as e:
+        print (e)
+
+
+
+def report_sequence_status_global_client(fixture_id, cavity, status, progress):
     try:
         client.call('setCavityStatus', [fixture_id, cavity['id'], status, progress], callback_function)
     except Exception as e:
@@ -72,8 +89,25 @@ def report_sequence_status(fixture_id, cavity, status, progress):
 
 
 def report_lock_status(fixture_id, lock, status):
+    lclient = MeteorClient('ws://127.0.0.1:3000/websocket', auto_reconnect=True)
     try:
-        client.call('setLockStatus', [fixture_id, lock,status], callback_function)
+        lclient.connect()
+    except Exception as e:
+        print (e)
+    try:
+        lclient.call('setLockStatus', [fixture_id, lock, status], callback_function)
+    except Exception as e:
+        print (e)
+    try:
+        lclient.close()
+    except Exception as e:
+        print (e)
+
+
+
+def report_lock_status_global_client(fixture_id, lock, status):
+    try:
+        client.call('setLockStatus', [fixture_id, lock, status], callback_function)
     except Exception as e:
         print(e)
 
@@ -102,7 +136,7 @@ def run_test(fixture_id, exc_lock, uut, test, progress, unique_res=None, wait_re
     lock = None
     if unique_res:
         res_lock = RedLock(unique_res)
-        report_lock_status(fixture_id, unique_res,True)
+        report_lock_status(fixture_id, unique_res, True)
         lock = res_lock.acquire()
         while not lock:
             time.sleep(0.02)
@@ -116,7 +150,7 @@ def run_test(fixture_id, exc_lock, uut, test, progress, unique_res=None, wait_re
     if lock:
         print ('releasing {}'.format(unique_res))
         res_lock.release()
-        report_lock_status(fixture_id, unique_res,False)
+        report_lock_status(fixture_id, unique_res, False)
     return verdict
 
 
