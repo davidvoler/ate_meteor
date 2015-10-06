@@ -19,12 +19,16 @@ the same system on this framework.
 Usage
 -----
 to start meteor:
-$ cd viewer
-$ meteor
+
+cd viewer
+
+meteor
 
 To start celery 
+
 cd launcher
-run celery tasks 
+
+run celery tasks (celery ...) 
 
 
 
