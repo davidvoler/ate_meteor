@@ -16,3 +16,15 @@ The system is currently in production. The system works heavily with web-socket.
 Learning about Meteor framework I have decided to check how much easier it would be to implement
 the same system on this framework.
 
+Usage
+-----
+to start meteor:
+$ cd viewer
+$ meteor
+
+To start celery 
+cd launcher
+run celery tasks 
+
+
+
